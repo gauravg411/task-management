@@ -1,0 +1,27 @@
+<div class="task-list-container">
+  <h2>Task List</h2>
+
+  <!-- Display error messages -->
+  <div *ngIf="errorMessage" class="error-message">
+    {{ errorMessage }}
+  </div>
+
+  <!-- Task list -->
+  <ul *ngIf="tasks.length > 0; else noTasks">
+    <li *ngFor="let task of tasks" class="task-item">
+      <div>
+        <h3>{{ task.title }}</h3>
+        <p>{{ task.description }}</p>
+        <small>Status: {{ task.status }}</small>
+      </div>
+      <button (click)="deleteTask(task._id)" class="btn delete-btn">
+        Delete
+      </button>
+    </li>
+  </ul>
+
+  <!-- Fallback message if no tasks -->
+  <ng-template #noTasks>
+    <p>No tasks available. Add a new task to get started!</p>
+  </ng-template>
+</div>
