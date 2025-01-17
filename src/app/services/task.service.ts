@@ -14,6 +14,14 @@ export class TaskService {
     return this.http.get(this.baseUrl);
   }
 
+  getTasksByUserId(userId: string): Observable<any> {
+    return this.http.get(`${this.baseUrl}?current-user=${userId}`);
+  }
+
+  getTaskById(id: string): Observable<any> {
+    return this.http.get(`${this.baseUrl}/${id}`);
+  }
+
   createTask(task: any): Observable<any> {
     return this.http.post(this.baseUrl, task);
   }

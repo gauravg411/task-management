@@ -37,4 +37,35 @@ router.post('/login', async (req, res) => {
   res.json({ token });
 });
 
+// Get current user (protected route)
+router.get('/current-user', async (req, res) => {
+  // Get the token from the Authorization header
+  const token = req.header('Authorization')?.split(' ')[1]; // Expecting "Bearer <token>"
+
+  if (!token) {
+    return res.status(401).json({ message: 'Token not provided' });
+  }
+
+  try {
+    // Verify the token
+    const decoded = jwt.verify(token, 'your_secret_key');
+    const user = await User.findById(decoded.userId);
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Return user details (including ID and role)
+    res.json({
+      userId: user._id,
+      username: user.username,
+      email: user.email,
+      role: user.role
+    });
+  } catch (err) {
+    return res.status(403).json({ message: 'Invalid or expired token' });
+  }
+});
+
+
 module.exports = router;

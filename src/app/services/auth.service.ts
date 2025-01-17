@@ -2,12 +2,14 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Router } from '@angular/router';
+import { HttpHeaders } from '@angular/common/http';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private baseUrl = 'http://localhost:3000/api/auth';
+  private baseUrl = environment.apiUrl + '/auth';
 
   constructor(private http: HttpClient, private router: Router) {}
 
@@ -20,13 +22,28 @@ export class AuthService {
   }
 
   isAuthenticated(): boolean {
-    // Check if user is authenticated by checking the token
     return !!localStorage.getItem('token');
   }
 
   logout() {
-    // Clear token or user session (this would be based on your authentication method)
     localStorage.removeItem('token');
-    this.router.navigate(['/login']); // Redirect to login
+    localStorage.removeItem('currentUser');
+    this.router.navigate(['/login']);
+  }
+
+  getToken(): string | null {
+    return localStorage.getItem('token');
+  }
+
+
+   // Fetch current user info from the backend
+   getCurrentUser(): Observable<any> {
+    const token = this.getToken();
+    if (!token) {
+      throw new Error('Token is not available');
+    }
+    // Set the Authorization header with the token
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    return this.http.get(`${this.baseUrl}/current-user`, { headers });
   }
 }

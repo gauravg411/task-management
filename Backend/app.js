@@ -10,7 +10,7 @@ app.use(cors());
 app.use(bodyParser.json());
 
 // MongoDB Connection
-mongoose.connect('mongodb://localhost:27017/taskmanagement', { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect('mongodb://localhost:27017/taskmanagement')
   .then(() => console.log('MongoDB connected'))
   .catch((err) => console.log(err));
 

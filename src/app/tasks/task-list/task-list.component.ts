@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { TaskService } from '../../services/task.service';
+import { AuthService } from 'src/app/services/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-task-list',
@@ -9,16 +11,22 @@ import { TaskService } from '../../services/task.service';
 export class TaskListComponent implements OnInit {
   tasks: any[] = [];
   errorMessage: string | null = null; // For displaying error messages
+  currentUser: any;
 
-  constructor(private taskService: TaskService) {}
+  constructor(private taskService: TaskService, private authService: AuthService, private router: Router) {}
 
   ngOnInit() {
-    this.loadTasks();
+    this.authService.getCurrentUser().subscribe((user) => {
+      this.currentUser = user;
+      console.log(this.currentUser);
+      const userId = this.currentUser.userId; // Get the userId from the current user object
+      this.loadTasks(userId); // Pass the userId to the loadTasks method
+    });
   }
 
-  loadTasks() {
+  loadTasks(userId: any) {
     this.errorMessage = null; // Clear previous error messages
-    this.taskService.getTasks().subscribe(
+    this.taskService.getTasksByUserId(userId).subscribe(
       res => {
         this.tasks = res;
       },
@@ -30,15 +38,23 @@ export class TaskListComponent implements OnInit {
   }
 
   deleteTask(taskId: string) {
+    console.log(taskId)
     this.errorMessage = null; // Clear previous error messages
     this.taskService.deleteTask(taskId).subscribe(
       res => {
-        this.loadTasks(); // Refresh the task list after deletion
+        alert("Deleted successfully")
+        this.loadTasks(this.currentUser.userId); // Refresh the task list after deletion
       },
       err => {
         console.error('Error deleting task:', err);
         this.errorMessage = 'Failed to delete task. Please try again later.';
       }
     );
+  }
+
+  // Edit task functionality
+  editTask(task: any) {
+    // Navigate to the task edit page, passing the task ID to the route
+    this.router.navigate(['/tasks/edit', task._id]);
   }
 }
