@@ -17,7 +17,7 @@ mongoose.connect('mongodb://localhost:27017/taskmanagement')
 // Routes
 
 app.get('/', (req, res) => {
-  res.send('API is running get it');
+  res.send('API is running get iddd');
 })
 app.use('/api/auth', authRoutes);
 app.use('/api/tasks', taskRoutes);
